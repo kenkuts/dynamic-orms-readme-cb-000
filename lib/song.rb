@@ -1,15 +1,30 @@
 require_relative "../config/environment.rb"
 require 'active_support/inflector'
+require 'pry'
 
 class Song
-
-
   def self.table_name
     self.to_s.downcase.pluralize
   end
 
   def self.column_names
+    DB[:conn].results_as_hash = false
+    sql = <<-SQL
+      CREATE TABLE IF NOT EXISTS songs (
+      id INTEGER PRIMARY KEY,
+      name TEXT,
+      album TEXT
+      )
+    SQL
+    DB[:conn].execute(sql)
+    sql = "pragma table_info('#{table_name}')"
+    puts DB[:conn].execute(sql)
+
     DB[:conn].results_as_hash = true
+    sql = "pragma table_info('#{table_name}')"
+    puts DB[:conn].execute(sql)
+
+    binding.pry
 
     sql = "pragma table_info('#{table_name}')"
 
@@ -59,6 +74,3 @@ class Song
   end
 
 end
-
-
-
